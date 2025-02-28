@@ -15,9 +15,12 @@ const port = process.env.PORT || 3000;
 const API_URL = `http://localhost:${port}`;
 
 // Load frontend URLs from environment variables
+
 const allowedOrigins = [
-  process.env.FRONTEND_URL_LOCAL || "http://127.0.0.1:5500",
-  process.env.FRONTEND_URL_PROD || "https://monad-jumper.vercel.app"
+  process.env.FRONTEND_URL_LOCAL || "http://127.0.0.1:5500",  // ✅ Local frontend from .env
+  "http://localhost:5500",  // ✅ Alternative live server setup
+  process.env.API_URL || "http://localhost:3000",  // ✅ Local backend from .env
+  process.env.FRONTEND_URL_PROD || "https://monad-jumper.vercel.app"  // ✅ Vercel frontend from .env
 ];
 
 // Configure CORS to Allow Frontend Requests
@@ -42,7 +45,6 @@ app.use(bodyParser.json());
 
 // Force CORS Headers in Every Response
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", process.env.FRONTEND_URL_PROD);
   res.header("Access-Control-Allow-Methods", "GET, HEAD, PUT, PATCH, POST, DELETE");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   res.header("Access-Control-Allow-Credentials", "true");
