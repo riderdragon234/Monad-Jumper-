@@ -17,7 +17,7 @@ const API_URL = `http://localhost:${port}`;
 // Load frontend URLs from environment variables
 const allowedOrigins = [
   process.env.FRONTEND_URL_LOCAL || "http://127.0.0.1:5500",
-  process.env.FRONTEND_URL_PROD || "https://fun-monad-runner-game-yjjk.vercel.app"
+  process.env.FRONTEND_URL_PROD || "https://monad-jumper.vercel.app"
 ];
 
 // Configure CORS to Allow Frontend Requests
