@@ -19,8 +19,9 @@ const allowedOrigins = new Set([
 ]);
 
 // ✅ Automatically allow all Vercel preview domains
-if (process.env.VERCEL === "1" && process.env.VERCEL_URL) {
+if (process.env.VERCEL == "1" && process.env.VERCEL_URL) {
   allowedOrigins.add(`https://${process.env.VERCEL_URL}`);
+  allowedOrigins.add(`https://monad-jumper-${process.env.VERCEL_URL}`);
 }
 
 const corsOptions = {
@@ -49,6 +50,15 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   res.header("Access-Control-Allow-Credentials", "true");
   next();
+});
+
+// ✅ Handle OPTIONS requests for preflight
+app.options('*', (req, res) => {
+  res.header("Access-Control-Allow-Origin", req.headers.origin);
+  res.header("Access-Control-Allow-Methods", "GET, HEAD, PUT, PATCH, POST, DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.sendStatus(204); // No content for preflight requests
 });
 
 // ✅ Serve static files from "public" folder
