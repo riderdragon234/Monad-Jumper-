@@ -267,9 +267,9 @@
 
         // Send jump action to the relayer server
 
-        const API_URL = window.location.hostname.includes("127.0.0.1")
-            ? "http://localhost:3000"
-            : "https://monad-jumper.vercel.app/api"; // 🔥 Replace with your actual backend URL
+            const API_URL = window.location.hostname.includes("127.0.0.1") || window.location.hostname.includes("localhost")
+                ? "http://localhost:3000" // Local backend URL
+                : "https://monad-jumper.vercel.app"; // Production backend URL
 
 
         async function sendJumpToRelayer(score) {
