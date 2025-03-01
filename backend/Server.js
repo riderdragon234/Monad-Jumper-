@@ -19,7 +19,7 @@ const allowedOrigins = new Set([
 ]);
 
 // ✅ Automatically allow all Vercel preview domains
-if (process.env.VERCEL == "1" && process.env.VERCEL_URL) {
+if (process.env.VERCEL === "1" && process.env.VERCEL_URL) {
   allowedOrigins.add(`https://${process.env.VERCEL_URL}`);
   allowedOrigins.add(`https://monad-jumper-${process.env.VERCEL_URL}`);
 }
