@@ -16,40 +16,48 @@ const API_URL = `http://localhost:${port}`;
 
 // Load frontend URLs from environment variables
 
+
 const allowedOrigins = [
-  process.env.FRONTEND_URL_LOCAL || "http://127.0.0.1:5500",  // ✅ Local frontend from .env
-  "http://localhost:5500",  // ✅ Alternative live server setup
-  process.env.API_URL || "http://localhost:3000",  // ✅ Local backend from .env
-  process.env.FRONTEND_URL_PROD || "https://monad-jumper.vercel.app"  // ✅ Vercel frontend from .env
+  process.env.FRONTEND_URL_LOCAL || "http://127.0.0.1:5500",  // ✅ Local frontend
+  "http://localhost:5500",  // ✅ Alternative local frontend setup
+  process.env.API_URL || "http://localhost:3000",  // ✅ Local backend
+  process.env.FRONTEND_URL_PROD || "https://monad-jumper.vercel.app"  // ✅ Vercel frontend
 ];
 
-// Configure CORS to Allow Frontend Requests
+// ✅ Automatically allow all Vercel preview domains
+if (process.env.VERCEL === "1") {
+  allowedOrigins.push(`https://${process.env.VERCEL_URL}`);
+}
+
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
       callback(null, true);
     } else {
       console.error(`❌ CORS Rejected for Origin: ${origin}`);
       callback(new Error("⚠️ CORS policy: Unauthorized request!"));
     }
   },
-  methods: "GET, HEAD, PUT, PATCH, POST, DELETE",
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-  optionsSuccessStatus: 204
+  credentials: true, // ✅ Allow cookies & authentication headers
+  optionsSuccessStatus: 200
 };
 
-// Apply CORS Middleware to ALL Routes
-app.use(cors());
-app.use(bodyParser.json());
+app.use(cors(corsOptions));
 
-// Force CORS Headers in Every Response
+// ✅ Force CORS Headers for Allowed Origins
 app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
   res.header("Access-Control-Allow-Methods", "GET, HEAD, PUT, PATCH, POST, DELETE");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   res.header("Access-Control-Allow-Credentials", "true");
   next();
 });
+
+
+
 
 // Test Route to Check CORS Headers
 app.get("/test-cors", (req, res) => {
