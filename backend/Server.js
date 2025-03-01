@@ -40,7 +40,7 @@ const corsOptions = {
 };
 
 // Apply CORS Middleware to ALL Routes
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(bodyParser.json());
 
 // Force CORS Headers in Every Response
