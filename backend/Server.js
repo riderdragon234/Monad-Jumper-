@@ -11,21 +11,19 @@ const port = process.env.PORT || 3000;
 
 // ✅ Determine Correct API URL
 const API_URL = process.env.API_URL_PROD || process.env.API_URL || `http://localhost:${port}`;
+
 console.log("🔥 Server is starting...");
-console.log("VERCEL:", process.env.VERCEL);
-console.log("VERCEL_URL:", process.env.VERCEL_URL);
 console.log("API_URL:", API_URL);
 
 // ✅ Middleware: Fix `req.body` Parsing Issues
-app.use(express.json());  // ✅ Ensures JSON body parsing
-app.use(bodyParser.urlencoded({ extended: true }));  // ✅ Ensures form data parsing
-app.use(bodyParser.json());  // ✅ Ensures Express parses JSON correctly
+app.use(express.json()); // ✅ Ensures JSON body parsing
+app.use(bodyParser.urlencoded({ extended: true })); // ✅ Ensures form data parsing
+app.use(bodyParser.json()); // ✅ Ensures Express parses JSON correctly
 
 // ✅ Dynamically allow frontend URLs, including Vercel preview deployments
 const allowedOrigins = new Set([
-  process.env.FRONTEND_URL_LOCAL || "http://127.0.0.1:5500",
-  "http://localhost:5500",
-  process.env.FRONTEND_URL_PROD || "https://monad-jumper.vercel.app"
+  process.env.FRONTEND_URL_LOCAL, // Local frontend URL from .env
+  process.env.FRONTEND_URL_PROD,  // Production frontend URL from .env
 ]);
 
 // ✅ Automatically Allow All Vercel Preview Deployments (*.vercel.app)
@@ -37,22 +35,18 @@ if (process.env.VERCEL_URL) {
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   console.log(`🔍 Incoming Request from Origin: ${origin}`);
-
   if (origin && [...allowedOrigins].some((allowed) => origin.endsWith(".vercel.app") || origin === allowed)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     console.log(`✅ CORS Allowed for: ${origin}`);
   } else {
     console.error(`❌ CORS Rejected for: ${origin}`);
   }
-
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   res.setHeader("Access-Control-Allow-Credentials", "true");
-
   if (req.method === "OPTIONS") {
     return res.status(204).end(); // ✅ Respond to preflight requests
   }
-
   next();
 });
 
@@ -63,7 +57,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
   const filePath = path.join(__dirname, 'public', 'index.html');
   let html = fs.readFileSync(filePath, 'utf8');
-  html = html.replace('{{API_URL}}', API_URL);
+  html = html.replace('{{API_URL}}', API_URL); // ✅ Replace placeholder with actual API_URL
   res.send(html);
 });
 
@@ -153,14 +147,11 @@ async function retryPendingTransactions() {
 // ✅ Endpoint to handle jump actions
 app.post('/jump', async (req, res) => {
   const { score, address } = req.body;
-
   if (!score || !address) {
     return res.status(400).json({ success: false, error: "Missing required fields" });
   }
-
   console.log(`🚀 Processing jump for score ${score}, address: ${address}`);
   const transactionData = await processTransaction(score, address);
-
   res.status(202).send({
     success: transactionData.success,
     message: transactionData.success ? "Transaction sent successfully." : "Transaction failed.",
