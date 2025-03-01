@@ -272,50 +272,45 @@
                 : "https://monad-jumper.vercel.app"; // Production backend URL
 
 
-        async function sendJumpToRelayer(score) {
-            if (!address) {
-                console.error("❌ Please connect MetaMask first!");
-                return;
+        
+            async function sendJumpToRelayer(score) {
+                if (!address) {
+                    console.error("❌ Please connect MetaMask first!");
+                    return;
+                }
+
+                try {
+                    console.log(`🚀 Sending jump request for score ${score} to ${API_URL}/jump...`);
+
+                    const response = await fetch(`${API_URL}/jump`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ score: score, address: address }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`⚠️ Server returned status ${response.status}`);
+                    }
+
+                    const data = await response.json();
+
+                    console.log("✅ Server Response:", data);
+
+                    // ✅ Print logs received from backend
+                    if (data.logs) {
+                        data.logs.forEach(log => console.log(`📝 Server Log: ${log}`));
+                    }
+
+                    if (data.success) {
+                        console.log(`✅ Transaction sent! Hash: ${data.transactionHash}`);
+                    } else {
+                        console.error(`❌ Transaction failed: ${data.error}`);
+                    }
+
+                } catch (error) {
+                    console.error("❌ Error sending jump:", error);
+                }
             }
-
-            try {
-                if (!API_URL) {
-                    console.error("❌ API URL is not set! Fetching...");
-                    await getAPIUrl();
-                }
-
-                console.log(`🚀 Sending jump request for score ${score} to ${API_URL}/jump...`);
-
-                const response = await fetch(`${API_URL}/jump`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ score: score, address: address }),
-                });
-
-                if (!response.ok) {
-                    throw new Error(`⚠️ Server returned status ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                console.log("✅ Server Response:", data);
-
-                // ✅ Print logs received from backend
-                if (data.logs) {
-                    data.logs.forEach(log => console.log(`📝 Server Log: ${log}`));
-                }
-
-                if (data.success) {
-                    console.log(`✅ Transaction sent! Hash: ${data.transactionHash}`);
-                } else {
-                    console.error(`❌ Transaction failed: ${data.error}`);
-                }
-
-            } catch (error) {
-                console.error("❌ Error sending jump:", error);
-            }
-        }
-
 
 
 

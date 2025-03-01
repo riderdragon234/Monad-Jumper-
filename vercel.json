@@ -11,6 +11,7 @@
     }
   ],
   "routes": [
+    { "src": "/jump", "dest": "/backend/Server.js" }, 
     { "src": "/api/(.*)", "dest": "/backend/Server.js" },
     { "src": "/(.*)", "dest": "/frontend/index.html" }
   ]
