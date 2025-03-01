@@ -6,8 +6,11 @@ const path = require('path');
 const fs = require('fs');
 require('dotenv').config({ path: './backend/.env' });
 
+// Log environment variables
+console.log("🔥 Server is starting...");
 console.log("VERCEL:", process.env.VERCEL);
 console.log("VERCEL_URL:", process.env.VERCEL_URL);
+console.log("API_URL:", process.env.API_URL_PROD || `http://localhost:${process.env.PORT || 3000}`);
 
 const app = express();
 const port = process.env.PORT || 3000;
