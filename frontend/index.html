@@ -372,9 +372,6 @@
             gameCanvas.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]; // Change playing area background
         }
 
-        // Initial obstacle spawning is removed
-
-        // Decrease obstacle spawn distance
 
         // Change obstacle size every 5 seconds
         setInterval(() => {
@@ -412,9 +409,26 @@
             }
         }, 100); // Check more often
 
+
         // Retry button event
         retryButton.addEventListener('click', () => {
-            location.reload(); // Reload the page to restart the game
+            // Reset the game state
+            isGameOver = false;
+            gameStarted = false; // Allow the game to restart
+            score = 0;
+            scoreValue.textContent = score;
+            gameOverMessage.style.display = 'none'; // Hide game-over screen
+
+            // Clear existing obstacles
+            obstacles.forEach(obstacle => obstacle.remove());
+            obstacles = [];
+
+            // Reset hedgehog position
+            hedgehog.style.bottom = "20px";
+            hedgehog.style.animation = "run 0.5s steps(4) infinite";
+
+            // Restart the game
+            startGame();
         });
 
         function gameOver() {
