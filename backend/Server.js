@@ -78,6 +78,24 @@ const nonceManager = new ethers.NonceManager(wallet);
 const pendingTransactions = new Map();
 const usedNonces = new Set(); // ✅ Track used nonces
 
+// ✅ Track game state and retry attempts
+let isGameActive = false; // Global game state
+const MAX_RETRY_ATTEMPTS = 5; // Max retries for pending transactions
+
+// ✅ Endpoint to control game state
+app.post('/game-state', (req, res) => {
+  const { action } = req.body;
+  if (action === 'start') {
+    isGameActive = true;
+    console.log("🔄 Game retry initiated. Resuming transaction processing.");
+  } else if (action === 'stop') {
+    isGameActive = false;
+    pendingTransactions.clear(); // Clear pending transactions
+    console.log("🛑 Game stopped. Pending transactions cleared.");
+  }
+  res.status(200).send({ success: true });
+});
+
 // ✅ Process a transaction
 async function processTransaction(score, address) {
   try {
@@ -106,7 +124,7 @@ async function processTransaction(score, address) {
     const transactionResponse = await nonceManager.sendTransaction(tx);
     console.log(`✅ Transaction sent for jump score ${score}: ${transactionResponse.hash}`);
 
-    pendingTransactions.set(transactionResponse.hash, { nonce, score, address });
+    pendingTransactions.set(transactionResponse.hash, { nonce, score, address, attempts: 1 });
 
     transactionResponse.wait().then((receipt) => {
       console.log(`✅ Confirmed in block ${receipt.blockNumber}: ${transactionResponse.hash}`);
@@ -124,17 +142,31 @@ async function processTransaction(score, address) {
 
 // ✅ Retry pending transactions
 async function retryPendingTransactions() {
+  if (!isGameActive) {
+    console.log("⏸️ Game inactive. Pausing transaction retries.");
+    return;
+  }
+
   console.log("🔄 Checking for pending transactions...");
   let foundPending = false;
 
   for (const [txHash, data] of pendingTransactions) {
+    const attemptCount = data.attempts || 1;
+
+    if (attemptCount > MAX_RETRY_ATTEMPTS) {
+      console.log(`❌ Max retries reached for: ${txHash}`);
+      pendingTransactions.delete(txHash);
+      continue;
+    }
+
     const receipt = await provider.getTransactionReceipt(txHash);
     if (!receipt) {
-      console.log(`⚠️ Resending unconfirmed transaction: ${txHash}`);
+      console.log(`⚠️ Resending (Attempt ${attemptCount}/5): ${txHash}`);
+      pendingTransactions.set(txHash, { ...data, attempts: attemptCount + 1 });
       await processTransaction(data.score, data.address);
       foundPending = true;
     } else {
-      console.log(`✅ Transaction already confirmed: ${txHash}`);
+      console.log(`✅ Confirmed: ${txHash}`);
       pendingTransactions.delete(txHash);
     }
   }
