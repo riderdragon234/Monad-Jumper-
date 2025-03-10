@@ -80,7 +80,7 @@ const usedNonces = new Set(); // ✅ Track used nonces
 
 // ✅ Track game state and retry attempts
 let isGameActive = false; // Global game state
-const MAX_RETRY_ATTEMPTS = 5; // Max retries for pending transactions
+const MAX_RETRY_ATTEMPTS = 3; // Max retries for pending transactions
 
 // ✅ Endpoint to control game state
 app.post('/game-state', (req, res) => {
