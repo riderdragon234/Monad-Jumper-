@@ -1,423 +1,452 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hedgehog Jumper Game with Monad</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #70c5ce;
-            font-family: 'Arial', sans-serif;
-        }
-
-        #score {
-            position: absolute;
-            top: 100px;
-            left: 500px;
-            font-size: 22px;
-            color: purple;
-            z-index: 10;
-        }
-
-        #gameCanvas {
-            position: absolute;
-            bottom: 0;
-            background-color: #70c5ce;
-            width: 100%;
-            height: 300px;
-            border-top: 2px solid #000;
-        }
-
-        .hedgehog {
-            position: absolute;
-            bottom: 20px;
-            left: 50px;
-            width: 60px;
-            height: 40px;
-            background: violet;
-            border-radius: 20px 20px 0 0;
-            box-shadow: inset 0 0 0 10px #7a1b85;
-            transition: bottom 0.1s;
-            animation: run 0.5s steps(4) infinite;
-        }
-
-        @keyframes run {
-            0% {
-                transform: translateX(0);
-            }
-
-            100% {
-                transform: translateX(-10px);
-            }
-        }
-
-        .obstacle {
-            position: absolute;
-            bottom: 20px;
-            width: 20px;
-            height: 40px;
-            background: red;
-            animation: move 4s linear forwards;
-        }
-
-        @keyframes move {
-            from {
-                transform: translateX(100vw);
-            }
-
-            to {
-                transform: translateX(-50px);
-            }
-        }
-
-        .game-over {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            font-size: 24px;
-            display: none;
-            text-align: center;
-        }
-
-        .retry-button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #ffcc00;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 18px;
-        }
-
-        .retry-button:hover {
-            background-color: #ffd700;
-        }
-
-        #levelUpMessage {
-            position: absolute;
-            top: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: yellow;
-            font-size: 30px;
-            font-weight: bold;
-            display: none;
-        }
-
-        #status {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        button {
-            padding: 10px 20px;
-            margin: 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.6.9/dist/ethers.umd.min.js"></script>
-    <script>
-        // Use the API_URL injected by the backend
-        const API_URL = "https://monad-jumper.vercel.app"; // Replace with your backend URL
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hedgehog Jumper Game with Monad</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #70c5ce;
+      font-family: 'Arial', sans-serif;
+    }
+    #score {
+      position: absolute;
+      top: 100px;
+      left: 500px;
+      font-size: 22px;
+      color: purple;
+      z-index: 10;
+    }
+    #gameCanvas {
+      position: absolute;
+      bottom: 0;
+      background-color: #70c5ce;
+      width: 100%;
+      height: 300px;
+      border-top: 2px solid #000;
+    }
+    .hedgehog {
+      position: absolute;
+      bottom: 20px;
+      left: 50px;
+      width: 60px;
+      height: 40px;
+      background: violet;
+      border-radius: 20px 20px 0 0;
+      box-shadow: inset 0 0 0 10px #7a1b85;
+      transition: bottom 0.1s;
+      animation: run 0.5s steps(4) infinite;
+    }
+    @keyframes run {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-10px); }
+    }
+    .obstacle {
+      position: absolute;
+      bottom: 20px;
+      width: 20px;
+      height: 40px;
+      background: red;
+      animation: move 4s linear forwards;
+    }
+    @keyframes move {
+      from { transform: translateX(100vw); }
+      to { transform: translateX(-50px); }
+    }
+    .game-over {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 24px;
+      display: none;
+      text-align: center;
+    }
+    .retry-button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #ffcc00;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    .retry-button:hover {
+      background-color: #ffd700;
+    }
+    #levelUpMessage {
+      position: absolute;
+      top: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: yellow;
+      font-size: 30px;
+      font-weight: bold;
+      display: none;
+    }
+    #status {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.6.9/dist/ethers.umd.min.js"></script>
+  <script>
+    // Use the API_URL injected by the backend (or hardcode for local testing)
+    const API_URL = "https://monad-jumper.vercel.app"; 
+  </script>
 </head>
-
 <body>
-    <h1>Hedgehog Monad Jumper Game</h1>
-    <button id="connectWallet">Connect MetaMask</button>
-    <div id="status">Wallet Status: Not Connected</div>
-    <div id="score">Score: <span id="scoreValue">0</span></div>
-    <div id="levelUpMessage">You have been leveled up!</div>
-    <div id="gameCanvas">
-        <div class="hedgehog" id="hedgehog"></div>
-    </div>
-    <div class="game-over" id="gameOverMessage">
-        Game Over! Your score: <span id="finalScore"></span><br>
-        <span id="thankYouMessage"></span><br>
-        <button class="retry-button" id="retryButton">Retry</button>
-    </div>
-    <script>
-        const hedgehog = document.getElementById('hedgehog');
-        const gameCanvas = document.getElementById('gameCanvas');
-        const gameOverMessage = document.getElementById('gameOverMessage');
-        const finalScore = document.getElementById('finalScore');
-        const thankYouMessage = document.getElementById('thankYouMessage');
-        const retryButton = document.getElementById('retryButton');
-        const scoreValue = document.getElementById('scoreValue');
-        const levelUpMessage = document.getElementById('levelUpMessage');
-        const connectWalletButton = document.getElementById('connectWallet');
-        const statusDiv = document.getElementById('status');
+  <h1>Hedgehog Monad Jumper Game</h1>
+  <button id="connectWallet">Connect MetaMask</button>
+  <div id="status">Wallet Status: Not Connected</div>
+  <div id="score">Score: <span id="scoreValue">0</span></div>
+  <div id="levelUpMessage">You have been leveled up!</div>
+  <div id="gameCanvas">
+    <div class="hedgehog" id="hedgehog"></div>
+  </div>
+  <div class="game-over" id="gameOverMessage">
+    Game Over! Your score: <span id="finalScore"></span><br>
+    <span id="thankYouMessage"></span><br>
+    <button class="retry-button" id="retryButton">Retry</button>
+  </div>
+  <script>
+    // --- DOM Elements ---
+    const hedgehog = document.getElementById('hedgehog');
+    const gameCanvas = document.getElementById('gameCanvas');
+    const gameOverMessage = document.getElementById('gameOverMessage');
+    const finalScore = document.getElementById('finalScore');
+    const thankYouMessage = document.getElementById('thankYouMessage');
+    const retryButton = document.getElementById('retryButton');
+    const scoreValue = document.getElementById('scoreValue');
+    const levelUpMessage = document.getElementById('levelUpMessage');
+    const connectWalletButton = document.getElementById('connectWallet');
+    const statusDiv = document.getElementById('status');
 
-        let isJumping = false;
-        let jumpCount = 0;
-        let obstacles = [];
-        let obstacleInterval;
-        let score = 0;
-        let isGameOver = false;
-        let obstacleSpeed = 2000;
-        let levelUpInterval;
-        let speedIncreaseInterval;
-        let level = 0;
-        let lastTapTime = 0;
-        let provider;
-        let signer;
-        let address;
-        let gameStarted = false;
+    // --- Game State Variables ---
+    let isJumping = false;
+    let jumpCount = 0;
+    let obstacles = [];
+    let obstacleInterval;
+    let score = 0;
+    let isGameOver = false;
+    let obstacleSpeed = 2000;
+    let levelUpInterval;
+    let speedIncreaseInterval;
+    let level = 0;
+    let lastTapTime = 0;
+    let provider;
+    let signer;
+    let address;
+    let gameStarted = false;
 
-        // Connect to MetaMask
-        async function connectMetaMask() {
-            if (typeof window.ethereum !== 'undefined') {
-                try {
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    address = accounts[0];
-                    provider = new ethers.providers.Web3Provider(window.ethereum);
-                    signer = provider.getSigner();
-                    statusDiv.innerText = `MetaMask Connected: ${address}`;
-                    startGame();
-                } catch (error) {
-                    statusDiv.innerText = "MetaMask Connection Denied!";
-                }
-            } else {
-                statusDiv.innerText = "MetaMask Not Installed!";
-            }
+    // For jump input control
+    let spaceKeyActive = false;
+    let lastJumpTime = 0;
+    const jumpCooldown = 800; // 800ms cooldown
+    let canJump = true;
+
+    // --- Connect Wallet ---
+    async function connectMetaMask() {
+      if (typeof window.ethereum !== 'undefined') {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          address = accounts[0];
+          provider = new ethers.providers.Web3Provider(window.ethereum);
+          signer = provider.getSigner();
+          statusDiv.innerText = `MetaMask Connected: ${address}`;
+          startGame();
+        } catch (error) {
+          statusDiv.innerText = "MetaMask Connection Denied!";
         }
+      } else {
+        statusDiv.innerText = "MetaMask Not Installed!";
+      }
+    }
+    connectWalletButton.addEventListener('click', connectMetaMask);
 
-        connectWalletButton.addEventListener('click', connectMetaMask);
+    // --- Start Game ---
+    function startGame() {
+      if (!gameStarted) {
+        gameStarted = true;
+        isGameOver = false;
+        score = 0;
+        scoreValue.textContent = score;
+        gameOverMessage.style.display = 'none';
 
-        // Start the game
-        function startGame() {
-            if (!gameStarted) {
-                gameStarted = true;
-                isGameOver = false;
-                score = 0;
-                scoreValue.textContent = score;
-                gameOverMessage.style.display = 'none';
-                clearInterval(obstacleInterval);
-                clearInterval(levelUpInterval);
-                clearInterval(speedIncreaseInterval);
-                obstacles = [];
+        // Clear any existing intervals (in case of retry)
+        clearInterval(obstacleInterval);
+        clearInterval(levelUpInterval);
+        clearInterval(speedIncreaseInterval);
 
-                obstacleSpeed = 2000;
-                obstacleInterval = setInterval(spawnObstacle, obstacleSpeed);
+        // Clear obstacles array (should be empty on first start)
+        obstacles = [];
 
-                levelUpInterval = setInterval(() => {
-                    level++;
-                    obstacleSpeed = Math.max(500, obstacleSpeed - 500);
-                    clearInterval(obstacleInterval);
-                    obstacleInterval = setInterval(spawnObstacle, obstacleSpeed);
-                    levelUpMessage.style.display = 'block';
-                    setTimeout(() => {
-                        levelUpMessage.style.display = 'none';
-                    }, 5000);
-                }, 60000);
+        obstacleSpeed = 2000;
+        obstacleInterval = setInterval(spawnObstacle, obstacleSpeed);
 
-                hedgehog.style.animation = 'run 0.5s steps(4) infinite';
+        levelUpInterval = setInterval(() => {
+          level++;
+          obstacleSpeed = Math.max(500, obstacleSpeed - 500);
+          clearInterval(obstacleInterval);
+          obstacleInterval = setInterval(spawnObstacle, obstacleSpeed);
+          levelUpMessage.style.display = 'block';
+          setTimeout(() => { levelUpMessage.style.display = 'none'; }, 5000);
+        }, 60000);
+
+        hedgehog.style.animation = 'run 0.5s steps(4) infinite';
+      }
+    }
+
+    // --- Jump Function (Single Jump Only) ---
+    function jump() {
+      const now = Date.now();
+      if (!isGameOver && gameStarted && !isJumping && now - lastJumpTime > jumpCooldown) {
+        isJumping = true;
+        jumpCount = 1;
+        performJump();
+        score++;
+        scoreValue.textContent = score;
+        sendJumpToRelayer(score);
+        lastJumpTime = now;
+      }
+    }
+
+    // --- Keyboard Event Listeners for Jumping ---
+    document.addEventListener('keydown', (event) => {
+      if (event.code === 'Space' && !spaceKeyActive) {
+        spaceKeyActive = true;
+        jump();
+      }
+    });
+    document.addEventListener('keyup', (event) => {
+      if (event.code === 'Space') {
+        spaceKeyActive = false;
+      }
+    });
+    // Also allow mouse click for jump
+    document.addEventListener('mousedown', () => {
+      if (gameStarted && !isJumping) {
+        jump();
+      }
+    });
+
+    // --- Perform Jump (Handles Rising and Falling) ---
+    function performJump() {
+      let jumpHeight = 0;
+      const jumpSpeed = 10;
+      const maxHeight = 150;
+      // Clear any previous intervals if they exist
+      if (window.jumpInterval) clearInterval(window.jumpInterval);
+      if (window.fallInterval) clearInterval(window.fallInterval);
+
+      // Rising phase
+      window.jumpInterval = setInterval(() => {
+        if (jumpHeight >= maxHeight) {
+          clearInterval(window.jumpInterval);
+          // Falling phase
+          window.fallInterval = setInterval(() => {
+            jumpHeight -= jumpSpeed;
+            hedgehog.style.bottom = `${20 + jumpHeight}px`;
+            if (jumpHeight <= 0) {
+              clearInterval(window.fallInterval);
+              hedgehog.style.bottom = "20px";
+              isJumping = false;
+              jumpCount = 0;
             }
+          }, 20);
+        } else {
+          jumpHeight += jumpSpeed;
+          hedgehog.style.bottom = `${20 + jumpHeight}px`;
         }
+      }, 20);
+    }
 
-        // Handle spacebar jump
-        document.addEventListener('keydown', (event) => {
-            if (gameStarted && event.code === 'Space') {
-                const currentTime = new Date().getTime();
-                if (currentTime - lastTapTime < 300) {
-                    jump();
-                }
-                lastTapTime = currentTime;
-                if (!isJumping) {
-                    jump();
-                }
-            }
+    // --- Spawn Obstacles ---
+    function spawnObstacle() {
+      if (!isGameOver && gameStarted) {
+        const obstacle = document.createElement('div');
+        obstacle.className = 'obstacle';
+        gameCanvas.appendChild(obstacle);
+        obstacles.push(obstacle);
+
+        const obstacleDuration = 4000; // Time before obstacle removal
+        setTimeout(() => {
+          // Remove the obstacle if it’s the first in the array
+          if (obstacles.length > 0 && obstacles[0] === obstacle) {
+            obstacle.remove();
+            obstacles.shift();
+          }
+        }, obstacleDuration);
+        changeBackground();
+      }
+    }
+
+    // --- Change Background Color ---
+    function changeBackground() {
+      const colors = ['#70c5ce', '#f0e68c', '#ff69b4', '#add8e6', '#ffb6c1'];
+      gameCanvas.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    // --- Obstacle Size Variation (Every 5 seconds) ---
+    setInterval(() => {
+      document.querySelectorAll('.obstacle').forEach(obstacle => {
+        const newWidth = Math.floor(Math.random() * 40) + 20;
+        const newHeight = Math.floor(Math.random() * 40) + 40;
+        obstacle.style.width = `${newWidth}px`;
+        obstacle.style.height = `${newHeight}px`;
+      });
+    }, 5000);
+
+    // --- Collision Detection ---
+    setInterval(() => {
+      if (gameStarted && !isGameOver && obstacles.length) {
+        const hedgehogRect = hedgehog.getBoundingClientRect();
+        // Check collision with the first obstacle
+        const obstacleRect = obstacles[0].getBoundingClientRect();
+        // A more forgiving collision check using a fraction of hedgehog's width
+        if (
+          hedgehogRect.x + hedgehogRect.width * 0.7 >= obstacleRect.x &&
+          hedgehogRect.x + hedgehogRect.width * 0.3 <= obstacleRect.x + obstacleRect.width &&
+          hedgehogRect.y + hedgehogRect.height >= obstacleRect.y
+        ) {
+          gameOver();
+        }
+      }
+    }, 100);
+
+    // --- Send Jump to Relayer ---
+    async function sendJumpToRelayer(score) {
+      if (!address) {
+        console.error("❌ Please connect MetaMask first!");
+        return;
+      }
+      try {
+        console.log(`🚀 Sending jump request for score ${score} to ${API_URL}/jump...`);
+        const response = await fetch(`${API_URL}/jump`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ score: score, address: address }),
         });
+        if (!response.ok) throw new Error(`⚠️ Server returned status ${response.status}`);
+        const data = await response.json();
+        console.log("✅ Server Response:", data);
+        if (data.logs) {
+          data.logs.forEach(log => console.log(`📝 Server Log: ${log}`));
+        }
+        if (data.success) {
+          console.log(`✅ Transaction sent! Hash: ${data.transactionHash}`);
+        } else {
+          console.error(`❌ Transaction failed: ${data.error}`);
+        }
+      } catch (error) {
+        console.error("❌ Error sending jump:", error);
+      }
+    }
 
-        // Handle touchpad tap
-        document.addEventListener('mousedown', (event) => {
-            if (gameStarted) {
-                jump();
-            }
+    // --- Notify Backend About Game State ---
+    async function updateBackendGameState(action) {
+      try {
+        const response = await fetch(`${API_URL}/game-state`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: action })
         });
+        console.log(`🔄 Backend game state: ${action}`);
+      } catch (error) {
+        console.error("❌ Error updating game state:", error);
+      }
+    }
 
-        // Send jump action to the relayer server
-        async function sendJumpToRelayer(score) {
-            if (!address) {
-                console.error("❌ Please connect MetaMask first!");
-                return;
-            }
+    // --- Game Over Function ---
+    function gameOver() {
+      isGameOver = true;
+      gameStarted = false;
 
-            try {
-                console.log(`🚀 Sending jump request for score ${score} to ${API_URL}/jump...`);
+      // Stop game intervals
+      clearInterval(obstacleInterval);
+      clearInterval(levelUpInterval);
+      clearInterval(speedIncreaseInterval);
+      if (obstacleInterval) {
+        clearInterval(obstacleInterval);
+        obstacleInterval = null;
+      }
+      // Also clear jump intervals if they exist
+      if (window.jumpInterval) clearInterval(window.jumpInterval);
+      if (window.fallInterval) clearInterval(window.fallInterval);
 
-                const response = await fetch(`${API_URL}/jump`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ score: score, address: address }),
-                });
+      // Notify backend to stop processing
+      updateBackendGameState('stop');
 
-                if (!response.ok) {
-                    throw new Error(`⚠️ Server returned status ${response.status}`);
-                }
+      // Stop obstacle animations and freeze them
+      obstacles.forEach(ob => {
+        ob.style.animation = 'none';
+        const rect = ob.getBoundingClientRect();
+        ob.style.left = `${rect.left}px`;
+        ob.style.transition = 'none';
+      });
+      // Remove obstacles from DOM
+      obstacles.forEach(ob => ob.remove());
+      obstacles = [];
 
-                const data = await response.json();
+      // Stop hedgehog animation
+      hedgehog.style.animation = 'none';
 
-                console.log("✅ Server Response:", data);
+      finalScore.textContent = score;
+      thankYouMessage.textContent = `Thanks for contributing ${score} transactions on Monad!`;
+      gameOverMessage.style.display = 'block';
+    }
 
-                if (data.logs) {
-                    data.logs.forEach(log => console.log(`📝 Server Log: ${log}`));
-                }
+    // --- Retry Button Handler ---
+    retryButton.addEventListener('click', () => {
+      // Notify backend to reset state
+      updateBackendGameState('start');
 
-                if (data.success) {
-                    console.log(`✅ Transaction sent! Hash: ${data.transactionHash}`);
-                } else {
-                    console.error(`❌ Transaction failed: ${data.error}`);
-                }
+      // Stop any existing obstacle spawn intervals
+      if (obstacleInterval) {
+        clearInterval(obstacleInterval);
+        obstacleInterval = null;
+      }
+      // Remove all obstacles
+      obstacles.forEach(ob => ob.remove());
+      obstacles = [];
 
-            } catch (error) {
-                console.error("❌ Error sending jump:", error);
-            }
-        }
+      // Reset game state variables
+      isGameOver = false;
+      gameStarted = false;
+      score = 0;
+      scoreValue.textContent = score;
+      gameOverMessage.style.display = 'none';
 
-        function jump() {
-            if (!isGameOver && gameStarted) {
-                if (jumpCount < 2) {
-                    isJumping = true;
-                    jumpCount++;
-                    performJump();
-                    score++;
-                    scoreValue.textContent = score;
-                    sendJumpToRelayer(score);
-                }
-            }
-        }
+      // Reset hedgehog position and animation
+      hedgehog.style.bottom = "20px";
+      hedgehog.style.animation = "run 0.5s steps(4) infinite";
 
-        function performJump() {
-            let jumpHeight = 0;
-            const jumpInterval = setInterval(() => {
-                if (jumpHeight >= 150) {
-                    clearInterval(jumpInterval);
-                    const fallInterval = setInterval(() => {
-                        jumpHeight -= 5;
-                        hedgehog.style.bottom = `${20 + jumpHeight}px`;
-                        if (jumpHeight <= 0) {
-                            clearInterval(fallInterval);
-                            isJumping = false;
-                            jumpCount = 0;
-                        }
-                    }, 20);
-                } else {
-                    jumpHeight += 10;
-                    hedgehog.style.bottom = `${20 + jumpHeight}px`;
-                }
-            }, 20);
-        }
+      // Also clear jump intervals if they exist
+      if (window.jumpInterval) clearInterval(window.jumpInterval);
+      if (window.fallInterval) clearInterval(window.fallInterval);
 
-        function spawnObstacle() {
-            if (!isGameOver && gameStarted) {
-                const obstacle = document.createElement('div');
-                obstacle.className = 'obstacle';
-                gameCanvas.appendChild(obstacle);
-                obstacles.push(obstacle);
+      // Reset jump state
+      isJumping = false;
+      jumpCount = 0;
+      lastJumpTime = 0;
+      spaceKeyActive = false;
 
-                const obstacleDuration = 4000;
-                setTimeout(() => {
-                    if (obstacles.length > 0 && obstacles[0] === obstacle) {
-                        obstacle.remove();
-                        obstacles.shift();
-                    }
-                }, obstacleDuration);
-
-                changeBackground();
-            }
-        }
-
-        function changeBackground() {
-            const colors = ['#70c5ce', '#f0e68c', '#ff69b4', '#add8e6', '#ffb6c1'];
-            gameCanvas.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        }
-
-        // Notify backend about game state
-        async function updateBackendGameState(action) {
-            try {
-                const response = await fetch(`${API_URL}/game-state`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: action })
-                });
-                console.log(`🔄 Backend game state: ${action}`);
-            } catch (error) {
-                console.error("❌ Error updating game state:", error);
-            }
-        }
-
-        // Game over logic
-        function gameOver() {
-            isGameOver = true;
-            gameStarted = false;
-            clearInterval(obstacleInterval);
-            clearInterval(levelUpInterval);
-            clearInterval(speedIncreaseInterval);
-
-            // Notify backend to stop processing
-            updateBackendGameState('stop');
-
-            obstacles.forEach(ob => ob.style.animation = 'none');
-            hedgehog.style.animation = 'none';
-            finalScore.textContent = score;
-            thankYouMessage.textContent = `Thanks for contributing ${score} transactions on Monad!`;
-            gameOverMessage.style.display = 'block';
-        }
-
-        // Retry button handler
-        retryButton.addEventListener('click', () => {
-            // Notify backend to reset state
-            updateBackendGameState('start');
-
-            // Reset game state
-            isGameOver = false;
-            gameStarted = false;
-            score = 0;
-            scoreValue.textContent = score;
-            gameOverMessage.style.display = 'none';
-            obstacles.forEach(ob => ob.remove());
-            obstacles = [];
-            hedgehog.style.bottom = "20px";
-            hedgehog.style.animation = "run 0.5s steps(4) infinite";
-            startGame();
-        });
-
-        // Check for collisions
-        setInterval(() => {
-            if (obstacles.length && !isJumping) {
-                const hedgehogRect = hedgehog.getBoundingClientRect();
-                const obstacleRect = obstacles[0].getBoundingClientRect();
-                if (
-                    hedgehogRect.x + hedgehogRect.width >= obstacleRect.x &&
-                    hedgehogRect.x <= obstacleRect.x + obstacleRect.width &&
-                    hedgehogRect.y + hedgehogRect.height >= obstacleRect.y
-                ) {
-                    gameOver();
-                }
-            }
-        }, 100);
-
-        // Restore obstacle size variation every 5 seconds (ADD THIS BELOW)
-        setInterval(() => {
-            document.querySelectorAll('.obstacle').forEach(obstacle => {
-                const newWidth = Math.floor(Math.random() * 40) + 20; // Random width between 20px and 60px
-                const newHeight = Math.floor(Math.random() * 40) + 40; // Random height between 40px and 80px
-                obstacle.style.width = `${newWidth}px`;
-                obstacle.style.height = `${newHeight}px`;
-            });
-        }, 5000);
-    </script>
+      // Restart the game
+      startGame();
+    });
+  </script>
 </body>
-
 </html>
