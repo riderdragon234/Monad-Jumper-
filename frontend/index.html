@@ -158,7 +158,7 @@
         const levelUpMessage = document.getElementById('levelUpMessage');
         const connectWalletButton = document.getElementById('connectWallet');
         const statusDiv = document.getElementById('status');
-        
+
 
         // --- Game State Variables ---
         let isJumping = false;
@@ -183,13 +183,13 @@
         const jumpCooldown = 800; // 800ms cooldown
         let canJump = true;
 
-        const jumpSound = new Audio('frontend/sounds/jump.mp3'); // Replace with actual sound file
+        const jumpSound = new Audio('sounds/jump.mp3'); // Replace with actual sound file
         //const crashSound = new Audio('crash.mp3');
-        const backgroundMusic = new Audio('frontend/sounds/background.mp3');
+        const backgroundMusic = new Audio('sounds/background.mp3');
         backgroundMusic.loop = true;  // ✅ Loop the music
         backgroundMusic.volume = 0.5;  // ✅ Adjust volume (0.0 to 1.0)
         backgroundMusic.preload = "auto";  // ✅ Ensure it's loaded before playing
-        const gameOverSound = new Audio('frontend/sounds/impact.mp3');
+        const gameOverSound = new Audio('sounds/impact.mp3');
 
         // ✅ Function to start background music after user interaction
         function startBackgroundMusic() {
