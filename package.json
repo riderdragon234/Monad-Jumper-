@@ -3,5 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "start": "node backend/Server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.1"
   }
 }
