@@ -13,6 +13,7 @@
   "routes": [
     { "src": "/jump", "dest": "/backend/Server.js" },
     { "src": "/api/(.*)", "dest": "/backend/Server.js" },
+    { "src": "/sounds/(.*)", "dest": "/frontend/sounds/$1" },
     { "src": "/(.*)", "dest": "/frontend/index.html" }
   ]
 }
