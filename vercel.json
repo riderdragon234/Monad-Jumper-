@@ -13,15 +13,6 @@
   "routes": [
     { "src": "/jump", "dest": "/backend/Server.js" },
     { "src": "/api/(.*)", "dest": "/backend/Server.js" },
-    { "src": "/frontend/sounds/(.*)", "dest": "/frontend/sounds/$1" },
     { "src": "/(.*)", "dest": "/frontend/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/frontend/sounds/(.*)",
-      "headers": [
-        { "key": "Content-Type", "value": "audio/mpeg" }
-      ]
-    }
   ]
 }
