@@ -4,31 +4,21 @@
     {
       "src": "backend/Server.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "frontend/**/*",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
     { "src": "/jump", "dest": "/backend/Server.js" },
     { "src": "/api/(.*)", "dest": "/backend/Server.js" },
-    
-    { 
-      "src": "/sounds/(.*)",
-      "dest": "/frontend/sounds/$1" 
-    },
+
+    { "src": "/sounds/(.*)", "dest": "/frontend/sounds/$1" },
     
     { "src": "/(.*)", "dest": "/frontend/index.html" }
   ],
   "headers": [
     {
-      "source": "/sounds/(.*)",
+      "source": "/frontend/sounds/(.*)",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "audio/mpeg"
-        }
+        { "key": "Content-Type", "value": "audio/mpeg" }
       ]
     }
   ]
