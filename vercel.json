@@ -6,13 +6,30 @@
       "use": "@vercel/node"
     },
     {
-      "src": "frontend/index.html",
+      "src": "frontend/**/*",
       "use": "@vercel/static"
     }
   ],
   "routes": [
-    { "src": "/jump", "dest": "/backend/Server.js" }, 
+    { "src": "/jump", "dest": "/backend/Server.js" },
     { "src": "/api/(.*)", "dest": "/backend/Server.js" },
+    
+    { 
+      "src": "/sounds/(.*)",
+      "dest": "/frontend/sounds/$1" 
+    },
+    
     { "src": "/(.*)", "dest": "/frontend/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/sounds/(.*)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "audio/mpeg"
+        }
+      ]
+    }
   ]
 }
