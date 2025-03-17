@@ -128,7 +128,7 @@
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.6.9/dist/ethers.umd.min.js"></script>
     <script>
         // Use the API_URL injected by the backend (or hardcode for local testing)
-        const API_URL = "https://monad-jumper.vercel.app"; 
+        const API_URL = "https://monad-jumper.vercel.app";
     </script>
 </head>
 
@@ -512,9 +512,15 @@
             hedgehog.style.bottom = "20px";
             hedgehog.style.animation = "run 0.5s steps(4) infinite";
 
-            // Also clear jump intervals if they exist
-            if (window.jumpInterval) clearInterval(window.jumpInterval);
-            if (window.fallInterval) clearInterval(window.fallInterval);
+            // ✅ Clear all jump-related intervals
+            if (window.jumpInterval) {
+                clearInterval(window.jumpInterval);
+                window.jumpInterval = null;
+            }
+            if (window.fallInterval) {
+                clearInterval(window.fallInterval);
+                window.fallInterval = null;
+            }
 
             // Reset jump state
             isJumping = false;
