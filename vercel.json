@@ -15,5 +15,13 @@
     { "src": "/api/(.*)", "dest": "/backend/Server.js" },
     { "src": "/(.*)", "dest": "/frontend/index.html" },
     { "src": "/frontend/sounds/(.*)", "dest": "/frontend/sounds/$1" }
+  ],
+  "headers": [
+    {
+      "source": "/frontend/sounds/:file",
+      "headers": [
+        { "key": "Content-Type", "value": "audio/mpeg" }
+      ]
+    }
   ]
 }
